@@ -150,6 +150,12 @@ hist(norm_dataset$duration_ms) ## approx norm
 
 ## run a correlation matrix across the normalized data
 
+## ensure that NA values are handled in the track_age column
+
+norm_dataset <- norm_dataset %>% mutate(track_age = ifelse(is.na(track_age), 
+                                                           mean(track_age, na.rm = T),
+                                                           track_age))
+
 cor_mat <- cor(norm_dataset, method = c("pearson"))
 
 ## install and unpack the necessary package
@@ -158,9 +164,13 @@ cor_mat <- cor(norm_dataset, method = c("pearson"))
 
 library(ggcorrplot)
 
+p_mat <- cor_pmat(norm_dataset)
 ## visualize the correlation matrix
 
-ggcorrplot(cor_mat)
+ggcorrplot(cor_mat,
+           p.mat = p_mat)
+
+## interestingly, only the low correlation values are statistically sig
 
 ## ---------------------------------------------------------------
 
