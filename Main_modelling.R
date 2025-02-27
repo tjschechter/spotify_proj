@@ -44,4 +44,22 @@ set.seed(992)
 
 val_set <- validation_set(split)
 
+## Preprocessing ------------------------------------------------
 
+## create pre-processing recipe
+
+r <- recipe(track_popularity ~ ., data = train) %>% ## set formula
+  step_impute_mean(all_numeric_predictors()) %>% ## handle missing values
+  step_nzv(all_numeric_predictors()) %>% ## near zero variance filter
+  step_corr(all_numeric_predictors()) %>% ## multicollinearity filter
+  step_orderNorm(all_numeric_predictors()) %>% ## normalize data
+  step_normalize(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors()) ## handle factors as dummy vars
+
+## prep the recipe
+
+p <- r %>% prep(retain = FALSE)
+
+## process the validation data
+
+val_p <- bake(p, val)
